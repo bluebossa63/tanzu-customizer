@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tanzu-customizer
+  name: tanzu-customizer
+spec:
+  ports:
+  - name: http-tanzu-customizer
+    port: 8679
+    protocol: TCP
+    targetPort: 8679
+  selector:
+    app: tanzu-customizer
+    component: customizer
+  sessionAffinity: None
+  type: LoadBalancer

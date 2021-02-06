@@ -1,0 +1,1 @@
+iptables -A KUBE-FIREWALL -p tcp --dport 8679 -j ACCEPT

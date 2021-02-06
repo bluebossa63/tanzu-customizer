@@ -1,0 +1,60 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tanzu-customizer
+  namespace: tanzu-customizer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tanzu-customizer
+  template:
+    metadata:
+      labels:
+        app: tanzu-customizer
+        component: customizer
+    spec:
+      containers:
+      - image: bluebossa63/tanzu-customizer:v1.0.6
+        args: [ "--serve.port=8181"]
+        imagePullPolicy: Always
+        name: tanzu-customizer
+        ports:
+        - containerPort: 8679
+          hostPort: 8679
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: "/etc/kubernetes"
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      hostNetwork: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      priority: 0
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: tanzu-customizer
+      serviceAccountName: tanzu-customizer
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoExecute
+        key: node.alpha.kubernetes.io/notReady
+        operator: Exists
+      - effect: NoExecute
+        key: node.alpha.kubernetes.io/unreachable
+        operator: Exists
+      - effect: NoSchedule
+        key: kubeadmNode
+        operator: Equal
+        value: master
+      volumes:
+      - name: kubeconfig
+        secret:
+          secretName: kubeconfig
