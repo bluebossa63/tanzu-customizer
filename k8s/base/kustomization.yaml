@@ -3,6 +3,9 @@ kind: Kustomization
 
 namespace: tanzu-customizer
 
+#configurations:
+#  - kustomize-config-configmap.yaml
+
 resources:
   - namespace.yaml
   - serviceaccount.yaml
@@ -10,12 +13,17 @@ resources:
   - deployment.yaml
   - service.yaml
   
+configMapGenerator:  
+- name: tanzu-customizer-env
+  namespace: tanzu-customizer
+  env: config/env.properties
+  
 secretGenerator:
-- name:  kubeconfig
+- name: kubeconfig
   namespace: tanzu-customizer
   files:
   - config/admin.conf
+  - config/cluster.conf
   
 generatorOptions:
   disableNameSuffixHash: true  
-  

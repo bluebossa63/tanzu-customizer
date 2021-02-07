@@ -1,0 +1,18 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: ....
+    server: ....
+  name: workload-01
+contexts:
+- context:
+    cluster: workload-01
+    user: workload-01-admin
+  name: workload-01-admin@workload-01
+current-context: workload-01-admin@workload-01
+kind: Config
+preferences: {}
+users:
+- name: workload-01-admin
+  user:
+    token: .............

@@ -24,22 +24,22 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import ch.tanzu.customizer.service.KubernetesHTTPProxyWatcherService;
 import io.kubernetes.client.openapi.ApiException;
 
-@SpringBootTest
+//@SpringBootTest
 class KubernetesAccessTestCase {
 
-	@Autowired
-	KubernetesHTTPProxyWatcherService kubernetesHTTPProxyWatcherService;
+	//@Autowired
+	//KubernetesHTTPProxyWatcherService kubernetesHTTPProxyWatcherService;
 	
 	@Test
 	void test() throws ApiException, FileNotFoundException, IOException, InterruptedException {
 
-		Thread.sleep(100000000);
+		
+		
+		//System.out.println( new BCryptPasswordEncoder().encode("VMware1!") );
+		//Thread.sleep(100000000);
 		
 	}
 }

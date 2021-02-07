@@ -69,7 +69,7 @@ import io.swagger.annotations.Authorization;
 @RestController
 public class TanzuCustomizerController {
 
-	private static final Logger logger = LoggerFactory.getLogger(DefaultController.class);
+	private static final Logger logger = LoggerFactory.getLogger(TanzuCustomizerController.class);
 
 	@Autowired
 	ObjectMapper objectMapper;

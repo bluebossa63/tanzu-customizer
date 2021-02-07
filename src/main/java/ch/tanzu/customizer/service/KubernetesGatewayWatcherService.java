@@ -47,7 +47,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.tanzu.customizer.dto.DnsRecord;
-import ch.tanzu.customizer.service.DNSManagementService.FQDN;
+import ch.tanzu.customizer.service.MicrosoftDNSManagementService.FQDN;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.auth.ApiKeyAuth;
@@ -67,7 +67,7 @@ public class KubernetesGatewayWatcherService {
 
 	/** The dns management service. */
 	@Autowired
-	DNSManagementService dnsManagementService;
+	MicrosoftDNSManagementService dnsManagementService;
 
 	/** The client builder. */
 	@Autowired
@@ -123,7 +123,7 @@ public class KubernetesGatewayWatcherService {
 
 				Response response = builder.get();
 				if (!Response.Status.Family.SUCCESSFUL.equals(Response.Status.Family.familyOf(response.getStatus()))) {
-					throw new IllegalArgumentException("cannot get gateways");
+					throw new IllegalArgumentException("cannot get gateways, reason " + response.getEntity().toString());
 				}
 				
 				InputStream is = (InputStream) response.getEntity();

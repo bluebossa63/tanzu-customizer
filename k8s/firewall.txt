@@ -1,1 +1,3 @@
 iptables -A KUBE-FIREWALL -p tcp --dport 8679 -j ACCEPT
+
+kubectl get secret contour-token-..... -o jsonpath='{.data.token}' | base64 -d

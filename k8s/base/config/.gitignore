@@ -1,2 +1,4 @@
 /admin.conf.org
 /admin.conf
+/cluster.conf
+/env.properties

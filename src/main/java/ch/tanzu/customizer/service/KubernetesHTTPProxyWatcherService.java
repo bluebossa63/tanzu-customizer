@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.tanzu.customizer.dto.DnsRecord;
 import ch.tanzu.customizer.dto.httpproxy.HTTPProxyWatch;
-import ch.tanzu.customizer.service.DNSManagementService.FQDN;
+import ch.tanzu.customizer.service.MicrosoftDNSManagementService.FQDN;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
@@ -54,6 +55,7 @@ import io.kubernetes.client.openapi.auth.ApiKeyAuth;
 import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceList;
 import io.kubernetes.client.util.ClientBuilder;
+import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.KubeConfig;
 
 /**
@@ -62,13 +64,14 @@ import io.kubernetes.client.util.KubeConfig;
  * @author daniele
  */
 @Service
+@Profile(value = { "contour" })
 public class KubernetesHTTPProxyWatcherService {
 
 	static Logger log = LoggerFactory.getLogger(KubernetesHTTPProxyWatcherService.class);
 
 	/** The dns management service. */
 	@Autowired
-	DNSManagementService dnsManagementService;
+	MicrosoftDNSManagementService dnsManagementService;
 
 	/** The client builder. */
 	@Autowired
@@ -97,6 +100,7 @@ public class KubernetesHTTPProxyWatcherService {
 
 			KubeConfig kubeConfig = KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath));
 			ApiClient client = ClientBuilder.kubeconfig(kubeConfig).build();
+			//ApiClient client = Config.fromToken(kubeConfig.getServer(), "eyJhbGciOiJSUzI1NiIsImtpZCI6InlIa0xaay1XV3BCeGltY1hOTi02YXdyeThjemVEbG53Z2JncjVtLXF5dE0ifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJ0YW56dS1zeXN0ZW0taW5ncmVzcyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJjb250b3VyLXRva2VuLWh4YndqIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImNvbnRvdXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJhYTA0YjY4OC0zYzM4LTRlNDItYTU1NS1lYzZlZTQyZDc1ZmYiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6dGFuenUtc3lzdGVtLWluZ3Jlc3M6Y29udG91ciJ9.uJWLoHNrDCjbqt3gzam92ECdikeZo4ed0VLYQzK2eerS3GmxjaBgQpyfSP3QPRj1MCN7vWKPj5IRR-xbIeX4RKEEqzr-09cwTmp06doEX1JboFmV71aJm4PHlrd6Hr0iv5X_z4Qwis1zO0NckKVLA4WQXrx7ggF-M2_zNo0Hr8F6TdKAwzZDbodAJ78NwHICVC70G5n0BE6L2O6zvoZy40jlI45KTEFczmNzpYtRAXbj8SQsdB4titKF4C0C7repFZROVCGGYIYMrylF_nDGbvF3I4oCu_a7BSn6WRq-SJ9rSsAV_A6ge10hxfH6ByzFBvTCV49euGEDMIkkjvHcwA", false);
 			Configuration.setDefaultApiClient(client);
 
 			log.info("start to watch deployments");
@@ -143,7 +147,7 @@ public class KubernetesHTTPProxyWatcherService {
 
 				Response response = builder.get();
 				if (!Response.Status.Family.SUCCESSFUL.equals(Response.Status.Family.familyOf(response.getStatus()))) {
-					throw new IllegalArgumentException("cannot get gateways");
+					throw new IllegalArgumentException("cannot get httpproxies, reason: \n" + response.readEntity(String.class));
 				}
 
 				InputStream is = (InputStream) response.getEntity();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Daniele Ulrich 
+66 * Copyright 2021 Daniele Ulrich 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,8 +117,22 @@ public class TanzuCustomizerConfiguration {
 	@Bean
 	public WinRmTool getWinRmTool(@Value("${winrm.server}") String winrmServer,
 			@Value("${winrm.user}") String winrmUser, @Value("${winrm.password}") String winrmPassword) {
-		return WinRmTool.Builder.builder(winrmServer, winrmUser, winrmPassword).authenticationScheme(AuthSchemes.NTLM)
-				.disableCertificateChecks(true).useHttps(true).context(context).build();
+		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+		try {
+			return WinRmTool.Builder.builder(winrmServer, winrmUser, winrmPassword).context(context).useHttps(true)
+					.authenticationScheme(AuthSchemes.NTLM).disableCertificateChecks(true)
+					.hostnameVerifier(new HostnameVerifier() {
+						@Override
+						public boolean verify(String hostname, SSLSession session) {
+							return true;
+						}
+					}).sslContext(org.apache.http.ssl.SSLContexts.custom()
+							.loadTrustMaterial(null, acceptingTrustStrategy).build())
+					.build();
+		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e);
+		}
 	}
 
 	/**
