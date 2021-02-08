@@ -14,7 +14,7 @@ spec:
         component: customizer
     spec:
       containers:
-      - image: bluebossa63/tanzu-customizer:v1.0.13
+      - image: bluebossa63/tanzu-customizer:v0.9.0
         imagePullPolicy: Always
         name: tanzu-customizer
         ports:

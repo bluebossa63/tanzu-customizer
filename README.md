@@ -8,13 +8,11 @@ Demonstrated Functionality:
 - daemonset to configure nodes automatically (-> replaced nodes)
 - addon for DNS management
 
-If you want to build the project yourself, you have to 
+If you want to build the project yourself, you have to checkout https://github.com/kubernetes-client/java (11.0.1-SNAPSHOT is referenced) but you can use the public image referenced in the k8s manifests directly
 
 ## Prerequisites for node customization
 
 Install Tanzu (Basic) on vSphere (tested without NSX-T) and deploy a workload cluster
-
-If you want to build the project, checkout https://github.com/kubernetes-client/java (11.0.1-SNAPSHOT is referenced)
 
 Get the ssh password for the Tanzu management cluster (ssh into vCenter, execute /usr/lib/vmware-wcp/decryptK8Pwd.py)
 
@@ -45,7 +43,6 @@ enable the functionality in [env.properties](k8s/base/config/env.properties) (DN
 
 set the AD Server IP and credentials in the same file
 
-
 Get the kubeconfig for your workload cluster, my cluster is named "workload-01"
 
 ```bash
@@ -53,7 +50,7 @@ kubectl get secret workload-01-kubeconfig -o jsonpath='{.data.value}' | base64 -
 
 ```
 
-Copy the contents in a file called cluster.conf in the directory /k8s/base/config.
+Copy the contents in a file called cluster.conf in the directory /k8s/base/config but replace the client-key part with the token of the contour service account - the admin.conf has no access to the watch API for httpproxies... (see template)
 
 Uncomment the line 24 in [kustomization.yaml](k8s/base/kustomization.yaml)
 
